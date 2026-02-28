@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.telco</groupId>
+        <artifactId>telco-reconciliator-monorepo</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>invoice-reconciliator</artifactId>
+    <packaging>war</packaging>
+    <name>Invoice Reconciliator - Backend</name>
+    <description>Legacy EJB application for telco invoice reconciliation, running on Apache TomEE Plus</description>
+
+    <dependencies>
+        <!-- Java EE 8 API - provided by TomEE at runtime -->
+        <dependency>
+            <groupId>org.apache.tomee</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0-6</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- H2 embedded relational database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.2.224</version>
+        </dependency>
+
+        <!-- Jackson JSON serialisation -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.3</version>
+        </dependency>
+        <!-- Java 8 date/time support for Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.15.3</version>
+        </dependency>
+
+        <!-- Unit testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Embedded OpenEJB container for integration tests -->
+        <dependency>
+            <groupId>org.apache.tomee</groupId>
+            <artifactId>openejb-core</artifactId>
+            <version>8.0.14</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- TomEE Maven Plugin for local run and packaging -->
+            <plugin>
+                <groupId>org.apache.tomee.maven</groupId>
+                <artifactId>tomee-maven-plugin</artifactId>
+                <version>8.0.14</version>
+                <configuration>
+                    <tomeeClassifier>plus</tomeeClassifier>
+                    <context>/reconciliator</context>
+                    <tomeeHttpPort>8080</tomeeHttpPort>
+                    <tomeeAjpPort>8009</tomeeAjpPort>
+                    <tomeeShutdownPort>8005</tomeeShutdownPort>
+                    <args>-Xmx512m -XX:PermSize=256m</args>
+                    <systemVariables>
+                        <openejb.datasource.plugin.all>true</openejb.datasource.plugin.all>
+                    </systemVariables>
+                </configuration>
+            </plugin>
+
+            <!-- WAR packaging - no web.xml required for Servlet 3.0+ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
