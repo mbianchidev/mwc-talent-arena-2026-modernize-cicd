@@ -63,6 +63,7 @@
     </dependencies>
 
     <build>
+        <finalName>reconciliator</finalName>
         <plugins>
             <!-- TomEE Maven Plugin for local run and packaging -->
             <plugin>
@@ -75,7 +76,7 @@
                     <tomeeHttpPort>8080</tomeeHttpPort>
                     <tomeeAjpPort>8009</tomeeAjpPort>
                     <tomeeShutdownPort>8005</tomeeShutdownPort>
-                    <args>-Xmx512m -XX:PermSize=256m</args>
+                    <args>-Xmx512m -XX:MaxMetaspaceSize=256m</args>
                     <systemVariables>
                         <openejb.datasource.plugin.all>true</openejb.datasource.plugin.all>
                     </systemVariables>

@@ -1,0 +1,28 @@
+# Maven build output
+target/
+*.class
+*.war
+*.ear
+*.jar
+
+# TomEE runtime directories (downloaded by tomee-maven-plugin)
+backend/apache-tomee-*/
+
+# Local deployment workspace
+.telcorec/
+
+# IDE files
+.idea/
+*.iml
+.eclipse/
+.classpath
+.project
+.settings/
+*.factorypath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
