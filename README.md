@@ -36,15 +36,6 @@ CDR (Call Detail Record) consumption data.  Built for **TelcoCorp Italia S.r.l.*
 
 ## Prerequisites
 
-### Docker (recommended)
-
-| Tool   | Minimum version |
-|--------|----------------|
-| Docker | 20.10          |
-| Docker Compose | v2 (`docker compose`) |
-
-### Local development (alternative)
-
 | Tool   | Minimum version |
 |--------|----------------|
 | Java   | 11             |
@@ -54,49 +45,7 @@ CDR (Call Detail Record) consumption data.  Built for **TelcoCorp Italia S.r.l.*
 
 ---
 
-## Quick start — Docker Compose
-
-The fastest way to run TelcoRec is with Docker:
-
-```bash
-docker compose up
-```
-
-This builds and starts two containers:
-
-| Service    | Container              | URL                              | Description                       |
-|------------|------------------------|----------------------------------|-----------------------------------|
-| `backend`  | `telcorec-backend`     | http://localhost:8080             | TomEE Plus 8 + H2 embedded DB    |
-| `frontend` | `telcorec-frontend`    | http://localhost:3000             | Nginx serving SPA + API proxy     |
-
-The frontend proxies all `/reconciliator/api/*` requests to the backend, so the
-full application is accessible at **http://localhost:3000**.
-
-To override ports, set environment variables:
-
-```bash
-BACKEND_PORT=9080 FRONTEND_PORT=4000 docker compose up
-```
-
-To tear down and remove volumes:
-
-```bash
-docker compose down -v
-```
-
-### Run tests in Docker
-
-```bash
-# Run the test suite inside a Maven container
-docker compose run --rm --no-deps backend mvn test -f /build/backend/pom.xml
-
-# Or run tests locally:
-cd backend && mvn test
-```
-
----
-
-## Quick start — local (no Docker)
+## Quick start
 
 ```bash
 # Clone and enter the repo
