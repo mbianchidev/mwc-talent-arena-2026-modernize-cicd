@@ -54,7 +54,7 @@ entire application into separate, well-defined services.
    - Use environment variables and `.env` files for configuration.
 
 5. **Add a `.dockerignore`** for each Dockerfile context to exclude build
-   artefacts, IDE files, and version-control metadata.
+   artifacts, IDE files, and version-control metadata.
 
 6. **Add or update backend tests**:
    - Inspect the existing test directory (e.g. `src/test/`). If tests already

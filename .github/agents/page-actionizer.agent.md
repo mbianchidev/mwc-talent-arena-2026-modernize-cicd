@@ -65,17 +65,17 @@ and also be manually triggerable via `workflow_dispatch`.
     for the project's backend).
 - Build the application (e.g. `mvn package`, `npm run build`,
   `docker compose build`, etc.).
-- Upload the build artefacts using `actions/upload-artifact`.
+- Upload the build artifacts using `actions/upload-artifact`.
 
 ### 4. Job: `attest`
 
 - **Must depend on `build`** (`needs: build`).
-- Download the build artefacts and test results from previous jobs.
+- Download the build artifacts and test results from previous jobs.
 - Use **`actions/attest-build-provenance`** to create a signed SLSA provenance
-  attestation for the build artefacts.
+  attestation for the build artifacts.
   - The `subject-path` must reference the actual build output files (WARs,
     JARs, bundles, Docker image tarballs, etc.) **and** the test result
-    artefacts.
+    artifacts.
 - This job requires `id-token: write` and `attestations: write` permissions.
 
 ### 5. Job: `deploy`
