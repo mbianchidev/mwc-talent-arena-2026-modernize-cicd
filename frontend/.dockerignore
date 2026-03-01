@@ -1,0 +1,5 @@
+# Frontend .dockerignore
+.DS_Store
+Thumbs.db
+*.log
+Dockerfile

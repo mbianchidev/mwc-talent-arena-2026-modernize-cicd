@@ -1,0 +1,13 @@
+# Backend .dockerignore
+target/
+apache-tomee-*/
+docker/
+*.iml
+.idea/
+.eclipse/
+.classpath
+.project
+.settings/
+*.log
+.DS_Store
+Thumbs.db
