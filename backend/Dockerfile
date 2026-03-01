@@ -10,7 +10,9 @@ FROM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /build
 
-# Import Maven Central TLS certificate into Java trust store
+# Import Maven Central TLS certificate into Java trust store.
+# Some Docker build environments have outdated CA bundles in the JDK trust store,
+# causing PKIX path building failures when Maven downloads dependencies over HTTPS.
 RUN openssl s_client -connect repo.maven.apache.org:443 -showcerts </dev/null 2>/dev/null \
         | openssl x509 -outform PEM > /tmp/maven-central.pem \
     && keytool -importcert -trustcacerts -cacerts -storepass changeit -noprompt \
@@ -21,7 +23,9 @@ RUN openssl s_client -connect repo.maven.apache.org:443 -showcerts </dev/null 2>
 COPY pom.xml /build/pom.xml
 COPY backend/pom.xml /build/backend/pom.xml
 
-# Resolve dependencies (cached unless pom.xml changes)
+# Resolve dependencies (cached unless pom.xml changes).
+# Failures are tolerated here because go-offline may not resolve all plugin
+# dependencies; the actual build step below will fail if anything is truly missing.
 RUN mvn dependency:go-offline -f /build/backend/pom.xml -B -q || true
 
 # Copy backend source and build
