@@ -4,10 +4,7 @@
  */
 'use strict';
 
-const API_BASE = (window.TELCOREC_API_BASE ||
-    (window.location.port === '3000'
-        ? window.location.origin + '/reconciliator/api'
-        : 'http://localhost:8080/reconciliator/api'));
+const API_BASE = 'http://localhost:8080/reconciliator/api';
 
 // ---------------------------------------------------------------------------
 // i18n translations

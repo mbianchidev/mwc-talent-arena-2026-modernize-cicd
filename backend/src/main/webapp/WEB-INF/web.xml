@@ -12,8 +12,14 @@
         <param-value>Development</param-value>
     </context-param>
 
-    <!-- JAX-RS endpoint is registered via @ApplicationPath("/api") in ApplicationConfig.java.
-         Do NOT add a servlet mapping here — it causes a duplicate endpoint error in TomEE/CXF. -->
+    <servlet>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>javax.ws.rs.core.Application</servlet-name>
+        <url-pattern>/api/*</url-pattern>
+    </servlet-mapping>
 
     <resource-ref>
         <description>ReconciliatorDS H2 embedded database</description>
