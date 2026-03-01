@@ -125,6 +125,30 @@ first startup with realistic Italian telco data:
 
 ---
 
+## CORS
+
+The backend includes a JAX-RS `CorsFilter` that adds `Access-Control-Allow-Origin: *`
+to all responses. This allows the frontend to be opened from a `file://` URL or served
+on a different port without browser CORS errors.
+
+---
+
+## Internationalisation (i18n)
+
+The frontend supports three languages, switchable from the navbar:
+
+| Code | Language |
+|------|----------|
+| `en` | English  |
+| `it` | Italian (default) |
+| `ca` | Catalan  |
+
+The chosen language is persisted in `localStorage` (`telcorec-lang` key) and
+restored on page reload. All static labels, error messages, and toasts are
+translated.
+
+---
+
 ## Architecture
 
 ```

@@ -123,3 +123,21 @@ body {
   .stat-value { font-size: 1.4rem; }
   .telco-table { font-size: .8rem; }
 }
+
+/* ----- Language selector ----- */
+.lang-btn {
+  font-size: .72rem;
+  padding: .18em .55em;
+  font-weight: 600;
+  letter-spacing: .03em;
+  border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.lang-btn.active {
+  background: #ffffff;
+  color: var(--telco-navy);
+  border-color: #ffffff;
+}
+.lang-btn:not(.active):hover {
+  background: rgba(255,255,255,.15);
+}

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TelcoRec - Riconciliazione Fatture</title>
+  <title>TelcoRec - Invoice Reconciliation</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
@@ -15,7 +15,15 @@
     <span class="navbar-brand fw-bold">
       <span class="telco-logo-icon">&#9655;</span> TelcoRec
     </span>
-    <span class="navbar-text text-white-50 small">Invoice Reconciliation System</span>
+    <span id="navSubtitle" class="navbar-text text-white-50 small">Invoice Reconciliation System</span>
+    <div class="d-flex align-items-center ms-auto">
+      <span id="langLabel" class="text-white-50 small me-2">Lingua</span>
+      <div class="btn-group btn-group-sm" role="group" aria-label="Language">
+        <button type="button" class="btn btn-outline-light lang-btn" data-lang="en">EN</button>
+        <button type="button" class="btn btn-outline-light lang-btn" data-lang="it">IT</button>
+        <button type="button" class="btn btn-outline-light lang-btn" data-lang="ca">CA</button>
+      </div>
+    </div>
   </div>
 </nav>
 
@@ -33,40 +41,40 @@
 
   <!-- ===== DASHBOARD ===== -->
   <div id="tab-dashboard" class="tab-pane">
-    <h4 class="mt-4 mb-3 telco-section-title">&#9783; Riepilogo Riconciliazione</h4>
+    <h4 id="dashTitle" class="mt-4 mb-3 telco-section-title">&#9783; Riepilogo Riconciliazione</h4>
     <div class="row g-3" id="statsCards">
       <div class="col-md-3"><div class="card telco-stat-card"><div class="card-body">
-        <div class="stat-label">Fatture Totali</div>
+        <div class="stat-label" id="label-total">Fatture Totali</div>
         <div class="stat-value" id="stat-total">-</div>
       </div></div></div>
       <div class="col-md-3"><div class="card telco-stat-card matched-card"><div class="card-body">
-        <div class="stat-label">&#10003; Corrispondenti</div>
+        <div class="stat-label" id="label-matched">&#10003; Corrispondenti</div>
         <div class="stat-value" id="stat-matched">-</div>
       </div></div></div>
       <div class="col-md-3"><div class="card telco-stat-card discrepancy-card"><div class="card-body">
-        <div class="stat-label">&#9888; Discrepanze</div>
+        <div class="stat-label" id="label-discrepancy">&#9888; Discrepanze</div>
         <div class="stat-value" id="stat-discrepancy">-</div>
       </div></div></div>
       <div class="col-md-3"><div class="card telco-stat-card amount-card"><div class="card-body">
-        <div class="stat-label">&#8364; Totale Discrepanza</div>
+        <div class="stat-label" id="label-amount">&#8364; Totale Discrepanza</div>
         <div class="stat-value" id="stat-amount">-</div>
       </div></div></div>
     </div>
     <div class="row g-3 mt-2">
       <div class="col-md-3"><div class="card telco-stat-card unprocessed-card"><div class="card-body">
-        <div class="stat-label">&#9711; Non Elaborate</div>
+        <div class="stat-label" id="label-unprocessed">&#9711; Non Elaborate</div>
         <div class="stat-value" id="stat-unprocessed">-</div>
       </div></div></div>
       <div class="col-md-3"><div class="card telco-stat-card overcharged-card"><div class="card-body">
-        <div class="stat-label">&#8593; Sovrafatturate</div>
+        <div class="stat-label" id="label-overcharged">&#8593; Sovrafatturate</div>
         <div class="stat-value" id="stat-overcharged">-</div>
       </div></div></div>
       <div class="col-md-3"><div class="card telco-stat-card undercharged-card"><div class="card-body">
-        <div class="stat-label">&#8595; Sottofatturate</div>
+        <div class="stat-label" id="label-undercharged">&#8595; Sottofatturate</div>
         <div class="stat-value" id="stat-undercharged">-</div>
       </div></div></div>
       <div class="col-md-3"><div class="card telco-stat-card missing-card"><div class="card-body">
-        <div class="stat-label">&#63; Consumo Mancante</div>
+        <div class="stat-label" id="label-missing">&#63; Consumo Mancante</div>
         <div class="stat-value" id="stat-missing">-</div>
       </div></div></div>
     </div>
@@ -75,11 +83,11 @@
   <!-- ===== CUSTOMERS ===== -->
   <div id="tab-customers" class="tab-pane">
     <div class="d-flex align-items-center mt-4 mb-3">
-      <h4 class="telco-section-title mb-0 me-3">&#128100; Clienti</h4>
+      <h4 id="customersTitle" class="telco-section-title mb-0 me-3">&#128100; Clienti</h4>
       <div class="spinner-border spinner-border-sm text-secondary" id="spinner-customers" style="display:none!important"></div>
     </div>
     <div class="table-responsive">
-    <table class="table table-hover telco-table">
+    <table id="customersTable" class="table table-hover telco-table">
       <thead><tr>
         <th>ID Cliente</th><th>Nome</th><th>Email</th><th>Telefono</th>
         <th>Citt&agrave;</th><th>Piano</th><th>Stato</th><th>Dal</th>
@@ -92,7 +100,7 @@
   <!-- ===== INVOICES ===== -->
   <div id="tab-invoices" class="tab-pane">
     <div class="d-flex align-items-center mt-4 mb-3">
-      <h4 class="telco-section-title mb-0 me-3">&#128196; Fatture</h4>
+      <h4 id="invoicesTitle" class="telco-section-title mb-0 me-3">&#128196; Fatture</h4>
       <select id="invoiceStatusFilter" class="form-select form-select-sm me-2" style="width:220px">
         <option value="">Tutti gli stati</option>
         <option value="UNPROCESSED">Non elaborate</option>
@@ -102,7 +110,7 @@
       <div class="spinner-border spinner-border-sm text-secondary" id="spinner-invoices" style="display:none!important"></div>
     </div>
     <div class="table-responsive">
-    <table class="table table-hover telco-table">
+    <table id="invoicesTable" class="table table-hover telco-table">
       <thead><tr>
         <th>N. Fattura</th><th>Cliente</th><th>Periodo</th>
         <th>Importo</th><th>Stato Pagamento</th><th>Stato Riconciliazione</th>
@@ -115,14 +123,14 @@
   <!-- ===== RECONCILIATION ===== -->
   <div id="tab-reconciliation" class="tab-pane">
     <div class="d-flex align-items-center mt-4 mb-3">
-      <h4 class="telco-section-title mb-0 me-3">&#9881; Riconciliazione</h4>
+      <h4 id="recTitle" class="telco-section-title mb-0 me-3">&#9881; Riconciliazione</h4>
       <button id="btnRunAll" class="btn btn-telco-primary me-2" onclick="runReconciliation()">
         &#9654; Avvia Riconciliazione Completa
       </button>
       <div class="spinner-border spinner-border-sm text-secondary" id="spinner-reconciliation" style="display:none!important"></div>
     </div>
     <div class="table-responsive">
-    <table class="table table-hover telco-table">
+    <table id="reconciliationTable" class="table table-hover telco-table">
       <thead><tr>
         <th>N. Fattura</th><th>Cliente</th><th>Importo Fatturato</th>
         <th>Importo Atteso</th><th>Discrepanza</th><th>Stato</th><th>Elaborato il</th>
@@ -137,7 +145,7 @@
 <!-- ===== FOOTER ===== -->
 <footer class="telco-footer mt-5">
   <div class="container-fluid text-center py-3">
-    <small>&copy; 2025 TelcoCorp Italia S.r.l. &mdash; Tutti i diritti riservati</small>
+    <small id="footerText">&copy; 2025 TelcoCorp Italia S.r.l. &mdash; Tutti i diritti riservati</small>
   </div>
 </footer>
 

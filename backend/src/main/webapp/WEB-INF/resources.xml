@@ -12,7 +12,7 @@
 <resources>
     <Resource id="jdbc/ReconciliatorDS" type="javax.sql.DataSource">
         JdbcDriver   = org.h2.Driver
-        JdbcUrl      = jdbc:h2:file:${user.home}/.telcorec/db/reconciliator;AUTO_SERVER=true;DB_CLOSE_ON_EXIT=FALSE;IGNORECASE=TRUE
+        JdbcUrl      = jdbc:h2:file:${user.home}/.telcorec/db/reconciliator;IGNORECASE=TRUE
         UserName     = sa
         Password     =
         ValidationQuery = SELECT 1

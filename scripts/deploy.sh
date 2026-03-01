@@ -91,7 +91,7 @@ check_prerequisites() {
   info "Checking prerequisites..."
   log "Checking prerequisites"
 
-  # Java >= 8
+  # Java >= 8, <= 23 (Security Manager removed in JDK 24+ breaks TomEE 8.x)
   if ! command -v java &>/dev/null; then
     err "java not found in PATH. Please install JDK 8+."
     exit 1
@@ -102,6 +102,37 @@ check_prerequisites() {
     err "Java 8+ is required. Found: Java ${JAVA_VER}"
     exit 1
   fi
+
+  # TomEE 8.x is incompatible with JDK 24+ (Security Manager removed via JEP 486)
+  if [[ "$JAVA_VER" -ge 24 ]]; then
+    warn "Java ${JAVA_VER} detected – incompatible with TomEE 8.x (Security Manager removed in JDK 24+)"
+    info "Searching for a compatible JDK (8-23)..."
+    local compat_home=""
+    for v in 17 21 11 23 8; do
+      local candidate="/opt/homebrew/opt/openjdk@${v}/libexec/openjdk.jdk/Contents/Home"
+      if [[ -x "${candidate}/bin/java" ]]; then
+        local cver
+        cver=$("${candidate}/bin/java" -version 2>&1 | awk -F '"' '/version/ {print $2}' | cut -d. -f1)
+        cver="${cver#1.}"
+        if [[ "$cver" -ge 8 && "$cver" -lt 24 ]]; then
+          compat_home="${candidate}"
+          JAVA_VER="${cver}"
+          break
+        fi
+      fi
+    done
+
+    if [[ -z "$compat_home" ]]; then
+      err "No compatible JDK (8-23) found. Install one with: brew install openjdk@17"
+      exit 1
+    fi
+
+    export JAVA_HOME="${compat_home}"
+    export PATH="${JAVA_HOME}/bin:${PATH}"
+    ok "Switched to compatible JDK ${JAVA_VER} at ${JAVA_HOME}"
+    log "Using compatible JDK ${JAVA_VER} from ${JAVA_HOME}"
+  fi
+
   ok "Java ${JAVA_VER} found"
 
   # Maven >= 3.6
@@ -177,7 +208,7 @@ start_database() {
 
   cat > "${TELCOREC_HOME}/h2-connection.properties" << 'PROPS'
 # H2 connection properties (for reference – DB is embedded in TomEE)
-url=jdbc:h2:~/.telcorec/db/reconciliator;AUTO_SERVER=TRUE
+url=jdbc:h2:~/.telcorec/db/reconciliator
 user=telcorec
 password=telcorec123
 PROPS
