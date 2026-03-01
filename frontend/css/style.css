@@ -1,0 +1,143 @@
+/* TelcoCorp Italia - TelcoRec brand stylesheet */
+:root {
+  --telco-teal:        #00897b;
+  --telco-teal-dark:   #00695c;
+  --telco-navy:        #1a237e;
+  --telco-navy-light:  #283593;
+  --telco-bg:          #f4f7f9;
+  --telco-card-shadow: 0 2px 8px rgba(0,0,0,.10);
+}
+
+body {
+  background: var(--telco-bg);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: .92rem;
+}
+
+/* ----- Navbar ----- */
+.telco-navbar {
+  background: linear-gradient(135deg, var(--telco-navy) 0%, var(--telco-teal-dark) 100%);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.telco-logo-icon { font-size: 1.2rem; margin-right: .3rem; color: #80cbc4; }
+
+/* ----- Tabs ----- */
+.telco-tabs .nav-link {
+  color: var(--telco-navy);
+  font-weight: 500;
+  border-radius: 6px 6px 0 0;
+  transition: background .15s;
+}
+.telco-tabs .nav-link:hover { background: #e0f2f1; }
+.telco-tabs .nav-link.active {
+  background: #ffffff;
+  color: var(--telco-teal-dark);
+  border-bottom-color: #ffffff;
+  font-weight: 700;
+}
+
+/* ----- Tab panes ----- */
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ----- Section titles ----- */
+.telco-section-title { color: var(--telco-navy); font-weight: 700; }
+
+/* ----- Stat cards ----- */
+.telco-stat-card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: var(--telco-card-shadow);
+  background: #ffffff;
+  transition: transform .15s;
+}
+.telco-stat-card:hover { transform: translateY(-3px); }
+.stat-label { font-size: .78rem; text-transform: uppercase; letter-spacing: .05em; color: #607d8b; margin-bottom: .25rem; }
+.stat-value { font-size: 2rem; font-weight: 700; color: var(--telco-navy); }
+
+.matched-card    .stat-value { color: #2e7d32; }
+.discrepancy-card .stat-value { color: #b71c1c; }
+.amount-card      .stat-value { color: #e65100; }
+.unprocessed-card .stat-value { color: #455a64; }
+.overcharged-card .stat-value { color: #c62828; }
+.undercharged-card .stat-value { color: #f57f17; }
+.missing-card      .stat-value { color: #6a1fa0; }
+
+/* ----- Tables ----- */
+.telco-table { background: #fff; border-radius: 8px; overflow: hidden; box-shadow: var(--telco-card-shadow); }
+.telco-table thead th {
+  background: var(--telco-navy);
+  color: #ffffff;
+  font-size: .82rem;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border: none;
+}
+.telco-table tbody tr:hover { background: #e0f2f1; }
+
+/* ----- Status badges ----- */
+.badge-matched           { background: #c8e6c9; color: #1b5e20; }
+.badge-overcharged       { background: #ffcdd2; color: #b71c1c; }
+.badge-undercharged      { background: #fff9c4; color: #f57f17; }
+.badge-missing           { background: #e1bee7; color: #6a1fa0; }
+.badge-unprocessed       { background: #eceff1; color: #455a64; }
+.badge-discrepancy_found { background: #ffcdd2; color: #b71c1c; }
+.badge-error             { background: #ffccbc; color: #bf360c; }
+.badge-active            { background: #c8e6c9; color: #1b5e20; }
+.badge-suspended         { background: #fff9c4; color: #f57f17; }
+.badge-churned           { background: #cfd8dc; color: #37474f; }
+.badge-paid              { background: #c8e6c9; color: #1b5e20; }
+.badge-pending           { background: #fff9c4; color: #e65100; }
+.badge-overdue           { background: #ffcdd2; color: #b71c1c; }
+.badge-disputed          { background: #ffccbc; color: #bf360c; }
+
+.status-badge {
+  display: inline-block;
+  padding: .22em .65em;
+  border-radius: 99px;
+  font-size: .78rem;
+  font-weight: 600;
+  letter-spacing: .03em;
+}
+
+/* ----- Buttons ----- */
+.btn-telco-primary {
+  background: var(--telco-teal);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background .15s;
+}
+.btn-telco-primary:hover { background: var(--telco-teal-dark); color: #fff; }
+
+/* ----- Footer ----- */
+.telco-footer {
+  background: var(--telco-navy);
+  color: #b0bec5;
+  font-size: .82rem;
+}
+
+/* ----- Responsive adjustments ----- */
+@media (max-width: 768px) {
+  .stat-value { font-size: 1.4rem; }
+  .telco-table { font-size: .8rem; }
+}
+
+/* ----- Language selector ----- */
+.lang-btn {
+  font-size: .72rem;
+  padding: .18em .55em;
+  font-weight: 600;
+  letter-spacing: .03em;
+  border-radius: 4px;
+  transition: background .15s, color .15s;
+}
+.lang-btn.active {
+  background: #ffffff;
+  color: var(--telco-navy);
+  border-color: #ffffff;
+}
+.lang-btn:not(.active):hover {
+  background: rgba(255,255,255,.15);
+}

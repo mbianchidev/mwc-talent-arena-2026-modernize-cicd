@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    TomEE resources.xml  –  defines the H2 embedded datasource injected as
+    java:comp/env/jdbc/ReconciliatorDS.
+
+    The database is stored as a file so data survives server restarts:
+      ~/.telcorec/db/reconciliator
+    TomEE resolves ${user.home} at startup.
+
+    Connection pool tuned for a lightweight local-only deployment.
+-->
+<resources>
+    <Resource id="jdbc/ReconciliatorDS" type="javax.sql.DataSource">
+        JdbcDriver   = org.h2.Driver
+        JdbcUrl      = jdbc:h2:file:${user.home}/.telcorec/db/reconciliator;IGNORECASE=TRUE
+        UserName     = sa
+        Password     =
+        ValidationQuery = SELECT 1
+        InitialSize  = 2
+        MaxActive    = 10
+        MaxIdle      = 5
+        MinIdle      = 1
+        MaxWaitMillis = 5000
+    </Resource>
+</resources>

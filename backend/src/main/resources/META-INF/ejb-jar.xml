@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+             http://xmlns.jcp.org/xml/ns/javaee/ejb-jar_3_2.xsd"
+         version="3.2">
+    <module-name>invoice-reconciliator</module-name>
+    <description>
+        Legacy EJB 3.x module for the TelcoCorp Italia invoice reconciliation platform.
+        Stateless session beans handle customer, invoice and reconciliation operations.
+    </description>
+</ejb-jar>
