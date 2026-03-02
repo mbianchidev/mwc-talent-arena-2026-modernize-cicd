@@ -1,0 +1,200 @@
+# =============================================================================
+# TelcoRec CI/CD Pipeline
+# =============================================================================
+# Tests the backend, builds across a matrix of OS/Java versions, creates SLSA
+# provenance attestations, and deploys the static frontend to GitHub Pages.
+# =============================================================================
+
+name: CI/CD Pipeline
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Prevent concurrent deployments to GitHub Pages
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+# Minimum permissions at the workflow level — jobs escalate as needed
+permissions:
+  contents: read
+
+jobs:
+  # ===========================================================================
+  # TEST — Run the JUnit 4 backend test suite
+  # ===========================================================================
+  test:
+    name: Run Backend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 11
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "11"
+          cache: maven
+
+      - name: Run tests
+        working-directory: backend
+        run: mvn --batch-mode --no-transfer-progress test
+
+      - name: Upload test results
+        if: always() # upload even when tests fail so failures are visible
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            backend/target/surefire-reports/*.xml
+            backend/target/surefire-reports/*.txt
+          retention-days: 30
+
+      # Produce a human-readable test summary in the Actions UI
+      - name: Test summary
+        if: always()
+        run: |
+          {
+            echo "## 🧪 Test Results"
+            echo ""
+            for f in backend/target/surefire-reports/*.txt; do
+              [ -f "$f" ] || continue
+              echo '```'
+              cat "$f"
+              echo '```'
+            done
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===========================================================================
+  # BUILD — Matrix build across OS × Java versions
+  # ===========================================================================
+  build:
+    name: "Build (Java ${{ matrix.java }}, ${{ matrix.os }})"
+    needs: test
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04]
+        java: ["11", "17"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Build WAR package
+        working-directory: backend
+        run: mvn --batch-mode --no-transfer-progress clean package -DskipTests
+
+      - name: Upload WAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: war-java${{ matrix.java }}-${{ matrix.os }}
+          path: backend/target/reconciliator.war
+          retention-days: 30
+
+      # Append a build summary line for this matrix leg
+      - name: Build summary
+        run: |
+          SIZE=$(du -h backend/target/reconciliator.war | cut -f1)
+          {
+            echo "## 🏗️ Build — Java ${{ matrix.java }} on ${{ matrix.os }}"
+            echo ""
+            echo "| Artifact | Size |"
+            echo "|----------|------|"
+            echo "| \`reconciliator.war\` | $SIZE |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===========================================================================
+  # ATTEST — SLSA provenance attestation for build outputs
+  # ===========================================================================
+  attest:
+    name: Attest Build Provenance
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write       # required for OIDC signing
+      attestations: write   # required to persist attestations
+      contents: read
+
+    steps:
+      - name: Download WAR artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: war-*
+          path: artifacts/wars
+          merge-multiple: true
+
+      - name: Download test results
+        uses: actions/download-artifact@v4
+        with:
+          name: test-results
+          path: artifacts/test-results
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: |
+            artifacts/wars/**/*.war
+            artifacts/test-results/**/*.xml
+
+  # ===========================================================================
+  # DEPLOY — Publish static frontend to GitHub Pages
+  # ===========================================================================
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    # Only deploy from the default branch or manual triggers
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare static site
+        run: |
+          mkdir -p _site
+          # Copy frontend assets into the Pages root
+          cp -r frontend/* _site/
+          # Include database reference SQL for documentation
+          cp -r database _site/database
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Deployment summary
+        run: |
+          {
+            echo "## 🚀 GitHub Pages Deployment"
+            echo ""
+            echo "Site published to: ${{ steps.deploy.outputs.page_url }}"
+          } >> "$GITHUB_STEP_SUMMARY"
