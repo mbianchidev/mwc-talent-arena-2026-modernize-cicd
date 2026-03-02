@@ -42,11 +42,19 @@ RUN groupadd -r tomee && \
     mkdir -p /home/tomee/.telcorec/db && \
     chown -R tomee:tomee /home/tomee
 
+# Install gosu for dropping privileges in entrypoint
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gosu && \
+    rm -rf /var/lib/apt/lists/*
+
 # Deploy the WAR
 COPY --from=builder /build/backend/target/reconciliator.war ${CATALINA_HOME}/webapps/reconciliator.war
 RUN chown tomee:tomee ${CATALINA_HOME}/webapps/reconciliator.war
 
-USER tomee
+# Entrypoint: fix volume permissions at runtime, then start TomEE as tomee user
+COPY backend/docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 WORKDIR ${CATALINA_HOME}
 
 EXPOSE 8080
@@ -54,4 +62,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=5 \
     CMD curl -sf http://localhost:8080/reconciliator/api/customers > /dev/null || exit 1
 
-CMD ["catalina.sh", "run"]
+ENTRYPOINT ["/entrypoint.sh"]
