@@ -175,6 +175,67 @@ translated.
 
 ---
 
+## Docker
+
+The application can be run in containers using Docker Compose.  Only Docker
+(with Compose v2) is required — no local Java, Maven or nginx installation.
+
+### Services
+
+| Service    | Image base            | Container port | Host port | Description |
+|------------|-----------------------|:--------------:|:---------:|-------------|
+| `backend`  | eclipse-temurin:11    | 8080           | 8080      | TomEE Plus 8.0.16 — Java EJB backend |
+| `frontend` | nginx:alpine          | 3000           | 3000      | Static SPA + reverse proxy to backend |
+
+### Quick start with Docker
+
+```bash
+# Build images and start both services
+docker compose up --build
+
+# Or run in detached mode
+docker compose up --build -d
+```
+
+Once healthy the frontend is at **http://localhost:3000** and the REST API is
+available at both:
+
+- **http://localhost:3000/reconciliator/api/** (via nginx proxy)
+- **http://localhost:8080/reconciliator/api/** (direct backend access)
+
+### Run tests inside Docker
+
+```bash
+# Run the backend test suite in a disposable container
+docker compose run --rm --no-deps backend bash -c \
+  "cd /build && mvn test -B"
+
+# Or build the test stage locally (no Compose needed)
+docker run --rm -v "$(pwd)":/src -w /src/backend \
+  maven:3.9-eclipse-temurin-11 mvn test -B
+```
+
+### Stop & clean up
+
+```bash
+# Stop containers
+docker compose down
+
+# Stop containers and remove persistent H2 data volume
+docker compose down -v
+```
+
+### Environment variables
+
+| Variable         | Default | Description |
+|------------------|---------|-------------|
+| `BACKEND_PORT`   | `8080`  | Host port mapped to backend |
+| `FRONTEND_PORT`  | `3000`  | Host port mapped to frontend |
+
+Override via `.env` file or inline: `FRONTEND_PORT=8080 docker compose up`.
+
+---
+
 ## CI/CD Pipeline
 
 The project includes a GitHub Actions workflow (`.github/workflows/ci-cd.yml`)
@@ -192,11 +253,3 @@ The workflow triggers on:
 - **Manual dispatch** (`workflow_dispatch`)
 
 A concurrency guard ensures only one Pages deployment runs at a time per branch.
-
----
-
-## Modernisation target
-
-This application is intentionally written in a **legacy style** (EJB 3.x, manual
-JNDI datasource, bash deployment) to serve as the starting point for a CI/CD
-modernisation exercise at **MWC Talent Arena 2026**.

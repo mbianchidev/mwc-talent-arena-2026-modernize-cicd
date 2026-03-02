@@ -1,0 +1,52 @@
+# ===========================================================================
+#  docker-compose.yml — TelcoRec (Telco Invoice Reconciliation System)
+#
+#  Services:
+#    backend  — Java EJB app on Apache TomEE Plus 8.0.16  (port 8080)
+#    frontend — nginx reverse proxy + static SPA           (port 3000)
+#
+#  Usage:
+#    docker compose up --build
+#    docker compose down -v          # stop and remove volumes
+# ===========================================================================
+
+services:
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: telcorec-backend
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+    volumes:
+      - h2-data:/home/tomee/.telcorec/db
+    networks:
+      - telcorec-net
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/reconciliator/api/customers"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: telcorec-frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - telcorec-net
+
+volumes:
+  h2-data:
+    driver: local
+
+networks:
+  telcorec-net:
+    driver: bridge
