@@ -175,6 +175,26 @@ translated.
 
 ---
 
+## CI/CD Pipeline
+
+The project includes a GitHub Actions workflow (`.github/workflows/ci-cd.yml`)
+that automates testing, building, attestation, and deployment.
+
+| Job | What it does |
+|-----|-------------|
+| **Test** | Runs the JUnit 4 backend test suite (`mvn test`) on Java 11 and uploads Surefire XML reports as artifacts (retained 30 days). A human-readable summary appears in the Actions run page. |
+| **Build** | Matrix build across **2 OS variants × 2 Java versions** (11, 17). Produces the `reconciliator.war` and uploads it as an artifact for each combination. Only runs after tests pass. |
+| **Attest** | Downloads all build and test artifacts and creates a signed **SLSA provenance attestation** using `actions/attest-build-provenance`, providing supply-chain integrity guarantees. |
+| **Deploy** | Publishes the `frontend/` static site to **GitHub Pages** using `actions/deploy-pages`. Available on manual dispatch and merges to `main`. |
+
+The workflow triggers on:
+- **Pull requests** targeting `main`
+- **Manual dispatch** (`workflow_dispatch`)
+
+A concurrency guard ensures only one Pages deployment runs at a time per branch.
+
+---
+
 ## Modernisation target
 
 This application is intentionally written in a **legacy style** (EJB 3.x, manual
